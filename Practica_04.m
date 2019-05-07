@@ -1,0 +1,299 @@
+%% Práctica 4: Convolución y Correlación de señales en tiempo continuo
+% *Autor: Córdova Fernández Karla Lilia*
+%
+% *SEÑALES Y SISTEMAS, Grupo 2TV1*
+
+%% Objetivos de la práctica.
+% * Conocer métodos básicos de integración numérica 
+% * Manipulación de instrucciones en MATLAB
+% * Simular convoluciones y correlaciones de señales continuas
+%
+%% Introducción.
+% 
+% 
+% # *Teorema fundamental del cálculo.*
+% 
+%
+%
+%% Problema 1-PR04.
+% Para fines prácticos, en la práctica se utilizarán dos funciones anónimas para definir 
+% a la función _escalón u(t)_ y el _pulso unitario p(t)_. Para la
+% convolución de señales se implementará la función *_convconm.m_*.
+%
+% <include>convconm.m</include>
+%
+%%
+u = @(t) (t>=0); %Escalón
+p = @(t) (t>=0) & (t<1); %Pulso unitario
+%%
+% En este problema se tienen las siguientes dos señales:
+% 
+% 
+% $$f(t) = (-t+1)p(t)+(t-1)p(t-1)$$
+% 
+% $$g(t) = p(t)$$
+%
+%
+%%
+t = -1:0.001:3;
+f = @(t) ((-t+1).*p(t)+(t-1).*p(t-1));
+g = @(t) (p(t));
+subplot(1, 2, 1)
+plot(t, f(t), 'b', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('f(t) = (-t+1)p(t)+(t-1)p(t-1)');
+subplot(1, 2, 2)
+plot(t, g(t), 'g', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('g(t)'); title('g(t) = p(t)');
+%%
+% * *SOLUCIÓN ANALÍTICA.*
+%
+% Se hará uso de la definición de convolución dada como
+% $$ f(t)*g(t) = \int_{- \infty}^{ \infty }h( \tau )x(t- \tau )
+% d\tau$. Para este caso se establece:
+%
+% $$f(\tau ) = \{ 0 < \tau < 1 : -\tau +1, 1 < \tau < 2 : (\tau -1) \} $$ y 
+%
+% $$g(t-\tau ) = \{ t-1 < \tau < t : 1 \} $$,
+% 
+% Existen tres casos:
+%
+% # La señal $g(t-\tau )$ entra en la señal $f(\tau )$ cuando $0<t<1:$ $$
+% \int_{0}^{t}-\tau + 1d\tau$.
+% # La señal $g(t-\tau )$ queda contenida dentro de $f(\tau )$ cuando $1<t<2$
+% $$ \int_{1}^{t}\tau -1d\tau + \int_{t-1}^{1}-\tau +1d\tau$.
+% # El último caso es el de la salida de $g(t-\tau )$ de la otra señal donde $2<t<3:$
+% $$ \int_{t-1}^{2}\tau -1d\tau$.
+% 
+% Ejecutando la operación con código:
+%%
+syms t tau
+conv1 = int(-tau+1,tau,0,t)
+conv2 = int(tau-1,tau,1,t) + int(-tau+1,tau,t-1,1)
+conv3 = int(tau-1,tau,t-1,2)
+%%
+% La descripción de la nueva señal generada por la correlación de $x_0(t)$ y $x_1(t)$ queda escrita como:
+%
+% <<31.PNG>>
+%
+%%
+t = -1:0.001:4;
+C_fg = (-t.^2/2+t).*p(t)+((t-1).^2/2+(t-2).^2/2).*p(t-1)+(-((t-1).*(t-3))/2).*p(t-2);
+subplot(1,1,1)
+plot(t, C_fg, 'r', 'LineWidth', 2); grid on;
+xlabel('t'); title('C_{f(t)g(t)} = f(t)*g(t)');
+%%
+% Como comprobación, se compara el resultado del proceso analítico con el
+% de la función _*convconm.m*_ donde se puede apreciar que se ha llegado al mismo resultado:
+
+%%
+convconm(f,g,0,4,0)
+%% Ejercicio 3) - PR04.
+%
+% En este problema se tienen las siguientes dos señales:
+% 
+% 
+% $$f(t) = (t)p(t)+p(t-1)$$
+% 
+% $$g(t) = p((t-1)/2)$$
+%
+%
+%%
+t = -1:0.001:4;
+f = @(t) ((t).*p(t)+p(t-1));
+g = @(t) (p((t-1)/2));
+subplot(1, 2, 1)
+plot(t, f(t), 'b', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('f(t) = (-t+1)p(t)+(t-1)p(t-1)');
+subplot(1, 2, 2)
+plot(t, g(t), 'g', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('g(t)'); title('g(t) = pulso(t)');
+%%
+% * *SOLUCIÓN ANALÍTICA.*
+%
+% Se establecen las señales con su respectiva modificación:
+%
+% $$f(\tau ) = \{ 0<\tau <1:\tau,1<\tau <2:1  \} $$ y 
+%
+% $$g(t-\tau ) = \{ t-3 < \tau < t-1 : 1 \} $$,
+% 
+% Existen cuatro casos:
+%
+% # La señal $g(t-\tau )$ entra en la señal $f(\tau )$ cuando $1<t<2:$ $$
+% \int_{0}^{t-1}\tau d\tau$.
+% # La señal $g(t-\tau )$ queda contenida dentro de $f(\tau )$ cuando $2<t<3:$
+% $$ \int_{1}^{t-1}1 d\tau + \int_{0}^{1}\tau d\tau$.
+% # Cuando $3<t<4:$ $$ \int_{1}^{2}1 d\tau + \int_{t-3}^{1}\tau d\tau$.
+% # El último caso es el de la salida de $g(t-\tau )$ de la otra señal donde $4<t<5:$
+% $$ \int_{t-3}^{2}1 d\tau$.
+% 
+% Ejecutando la operación con código:
+%%
+syms t tau
+conv1 = int(tau,tau,0,t-1)
+conv2 = int(1,tau,1,t-1) + int(tau,tau,0,1)
+conv3 = int(1,tau,1,2) + int(tau,tau,t-3,1)
+conv4 = int(1,tau,t-3,2)
+%%
+% La descripción de la nueva señal generada por la correlación de $x_0(t)$ y $x_1(t)$ queda escrita como:
+%
+% <<33.PNG>>
+%
+%%
+t = 0:0.001:6;
+C_fg = ((t-1).^2/2).*p(t-1)+(t-3/2).*p(t-2)+(3/2-(t-3).^2/2).*p(t-3)+(5-t).*p(t-4);
+subplot(1,1,1)
+plot(t, C_fg, 'r', 'LineWidth', 2); grid on;
+xlabel('t'); title('C_{f(t)g(t)} = f(t)*g(t)');
+%%
+% Como comprobación, se compara el resultado del proceso analítico con el
+% de la función _*convconm.m*_ donde se puede apreciar que se ha llegado al mismo resultado:
+%%
+convconm(f,g,0,6,0)
+%% Ejercicio e) - PR06.
+%
+% En este problema se quiere obtener la autocorrelación de:
+% 
+% 
+% $$x_1(t) = u(t)-2u(t-3)+u(t-4)$$
+%
+%
+%%
+t = -1:0.001:5;
+x1 = @(t) (u(t)-2.*u(t-3)+u(t-4));
+subplot(1, 1, 1)
+plot(t, x1(t), 'b', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('f(t) = (-t+1)p(t)+(t-1)p(t-1)');
+%%
+% * *SOLUCIÓN ANALÍTICA.*
+%
+% Se hará uso de la definición de correlación dada como
+% $$ f(t)**g(t)=f(t)*g(-t)= \int_{- \infty}^{ \infty }h( \tau )x(t+ \tau )
+% d\tau$.
+% Se establece la señal como:
+%
+% $$x_1(t+\tau ) = \{ -t<\tau <3-t:1,3-t<\tau <4-t:-1 \} $$
+%
+% $$x_1(\tau ) = \{ 0<\tau <3:1,3<\tau <4:-1 \} $$
+%
+% Se aplica la suma cartesiana para los intervalos de la convolución:
+%
+% $$[0, 3, 4] + [0, -3, -4] = [-4, -3, -1, 0, 1, 3, 4]$$
+%
+% En este ejercicio, se presentan seis casos:
+% 
+% # La señal $x_1(t+\tau )$ entra por primera vez a la señal $x_1(\tau )$ cuando $3<t<4:$ $$
+% \int_{0}^{4-t}(-1)d\tau$.
+% # En los traslapes internos, cuando $1<t<3:$ $$ \int_{3-t}^{4-t}(-1)d\tau +
+% \int_{0}^{3-t}1d\tau$.
+% # Cuando $0<t<1:$ $$\int_{3-t}^{3}(-1)d\tau + \int_{3}^{4-t}1d\tau
+% + \int_{0}^{3-t}1d\tau$.
+% # Cuando $-1<t<0:$ $$\int_{3-t}^{4}1d\tau + \int_{3}^{3-t}(-1)d\tau
+% + \int_{-t}^{3}1d\tau$.
+% # Cuando $-3<t<-1:$ $$\int_{3}^{4}(-1)d\tau + \int_{-t}^{3}1d\tau$.
+% # Cuando la señal $x_1(t+\tau )$ ya va de salida de $x_1(\tau )$, cuando $-4<t<-3:$ $$
+% \int_{-t}^{4}(-1)d\tau$.
+%
+% En código, se resuelven las integrales de esta manera:
+%%
+syms t tau
+i1 = int(-1,tau,0,4-t)
+i2 = int(-1,tau,3-t,4-t)+ int(1,tau,0,3-t)
+i3 = int(-1,tau,3-t, 3) + int(1,tau,3,4-t) + int(1,tau,0,3-t)
+i4 = int(1,tau,3-t,4) + int(-1,tau,3,3-t) + int(1,tau,-t,3)
+i5 = int(-1,tau,3,4) + int(1,tau,-t,3)
+i6 = int(-1,tau,-t,4)
+%
+%%
+% La descripción de la nueva señal generada por la autocorrelación de $x_1(t)$ queda escrita como:
+%
+% <<e6.PNG>>
+%
+%%
+t = -5:0.001:5;
+Rx1x1 = (t-4).*p(t-3)+(2-t).*p((t-1)/2)+(4-3*t).*p(t)+(3*t+4).*p(t+1)+(t+2).*p((t+3)/2)+(-t-4).*p(t+4);
+subplot(1,1,1)
+plot(t, Rx1x1, 'm', 'LineWidth', 2); grid on;
+xlabel('t'); title('R_{x_1(t)x_1(t)} = x_1(t)**x_1(t)');
+%%
+% Como comprobación, se compara el resultado del proceso analítico con el
+% de la función _*convconm.m*_ donde se puede apreciar que se ha llegado al mismo resultado:
+
+%%
+convconm(x1,x1,-5,5,1);
+%
+%% Ejercicio f) - PR06.
+%
+% En este problema se busca la correlación de las siguientes señales:
+% 
+% 
+% $$x_0(t) = u(t)-2u(t-3)+u(t-4)$$
+%
+% $$x_1(t) = u(t)-2u(t-2)+u(t-4)$$
+%
+%%
+t = -1:0.001:5;
+x0 = @(t) (u(t)-2.*u(t-2)+u(t-4));
+x1 = @(t) (u(t)-2.*u(t-3)+u(t-4));
+subplot(1, 2, 1)
+plot(t, x0(t), 'b', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('x_0(t) = u(t)-2u(t-2)+u(t-4)');
+subplot(1, 2, 2)
+plot(t, x1(t), 'g', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('x_1(t) = u(t)-2u(t-3)+u(t-4)');
+%%
+% * *SOLUCIÓN ANALÍTICA.*
+%
+% Del mismo modo que el ejemplo anterior con la definición de correlación, se establecen las señales como:
+%
+% $$x_0(t+\tau ) = \{ -t<\tau <2-t:1,2-t<\tau <4-t:-1 \} $$
+%
+% $$x_1(\tau ) = \{ 0<\tau <3:1,3<\tau <4:-1 \} $$
+% 
+% Se aplica la suma cartesiana para los intervalos de la convolución:
+%
+% $$[0, 2, 4] + [0, -3, -4] = [-4, -3, -2, -1, 0, 1, 2, 4]$$
+%
+% Como en el problema anterior, se presentan casos muy similares:
+% 
+% # Cuando la primer señal entra a la segunda, cuando $2<t<4:$ $$
+% \int_{0}^{4-t}(-1)d\tau$.
+% # En los traslapes internos, cuando $1<t<2:$ $$ \int_{0}^{2-t}1d\tau +
+% \int_{2-t}^{4-t}(-1)d\tau$.
+% # Cuando $0<t<1:$ $$\int_{0}^{2-t}1d\tau + \int_{2-t}^{3}(-1)d\tau
+% + \int_{3}^{4-t}1d\tau$.
+% # Cuando $-1<t<0:$ $$\int_{3}^{4}1d\tau + \int_{-t}^{2-t}1d\tau
+% + \int_{2-t}^{3}(-1)d\tau$.
+% # Cuando $-2<t<-1:$ $$\int_{-t}^{3}1d\tau + \int_{3}^{2-t}(-1)d\tau
+% + \int_{2-t}^{4}1d\tau$.
+% # Cuando $-3<t<-2:$ $$\int_{-t}^{3}1d\tau + \int_{3}^{4}(-1)d\tau$.
+% # Cuando la señal $x_0(t+\tau )$ ya va de salida de $x_1(\tau )$, cuando $-4<t<-3:$ $$
+% \int_{-t}^{4}(-1)d\tau$.
+%
+% En código, se resuelven las integrales de esta manera:
+%%
+syms t tau
+i1 = int(-1,tau,0,4-t)
+i2 = int(1,tau,0,2-t)+ int(-1,tau,2-t,4-t)
+i3 = int(1,tau,0,2-t) + int(-1,tau,2-t,3) + int(1,tau,3,4-t)
+i4 = int(1,tau,-t,2-t) + int(-1,tau,2-t,3) + int(1,tau,3,4)
+i5 = int(1,tau,-t,3) + int(-1,tau,3,2-t)+ int(1,tau,2-t,4)
+i6 = int(-1,tau,3,4)+ int(1,tau,-t,3)
+i7 = int(-1,tau,-t,4)
+%
+%%
+% La descripción de la nueva señal generada por la correlación de $x_0(t)$ y $x_1(t)$ queda escrita como:
+%
+% <<f6.PNG>>
+%
+%%
+t = -5:0.001:5;
+Rx0x1 = (-t-4).*p(t+4)+(t+2).*p(t+3)+(3*t+6).*p(t+2)+(2-t).*p(t+1)+(2-3*t).*p(t)+(-t).*p(t-1)+(t-4).*p((t-2)/2);
+subplot(1,1,1)
+plot(t,Rx0x1, 'm', 'LineWidth', 2);grid on;
+xlabel('t'); title('R_{x_0(t)x_1(t)} = x_0(t)**x_1(t)');
+%%
+% Como comprobación, se compara el resultado del proceso analítico con el
+% de la función _*convconm.m*_ donde se puede apreciar que se ha llegado al mismo resultado:
+%%
+convconm(x0,x1,-4.5,5,1);
+%

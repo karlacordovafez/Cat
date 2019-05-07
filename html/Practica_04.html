@@ -1,0 +1,598 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Pr&aacute;ctica 4: Convoluci&oacute;n y Correlaci&oacute;n de se&ntilde;ales en tiempo continuo</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-05-07"><meta name="DC.source" content="Practica_04.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Pr&aacute;ctica 4: Convoluci&oacute;n y Correlaci&oacute;n de se&ntilde;ales en tiempo continuo</h1><!--introduction--><p><b>Autor: C&oacute;rdova Fern&aacute;ndez Karla Lilia</b></p><p><b>SE&Ntilde;ALES Y SISTEMAS, Grupo 2TV1</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Objetivos de la pr&aacute;ctica.</a></li><li><a href="#2">Introducci&oacute;n.</a></li><li><a href="#3">Problema 1-PR04.</a></li><li><a href="#13">Ejercicio 3) - PR04.</a></li><li><a href="#21">Ejercicio e) - PR06.</a></li><li><a href="#29">Ejercicio f) - PR06.</a></li></ul></div><h2 id="1">Objetivos de la pr&aacute;ctica.</h2><div><ul><li>Conocer m&eacute;todos b&aacute;sicos de integraci&oacute;n num&eacute;rica</li><li>Manipulaci&oacute;n de instrucciones en MATLAB</li><li>Simular convoluciones y correlaciones de se&ntilde;ales continuas</li></ul></div><h2 id="2">Introducci&oacute;n.</h2><div><ol><li><b>Teorema fundamental del c&aacute;lculo.</b></li></ol></div><h2 id="3">Problema 1-PR04.</h2><p>Para fines pr&aacute;cticos, en la pr&aacute;ctica se utilizar&aacute;n dos funciones an&oacute;nimas para definir a la funci&oacute;n <i>escal&oacute;n u(t)</i> y el <i>pulso unitario p(t)</i>. Para la convoluci&oacute;n de se&ntilde;ales se implementar&aacute; la funci&oacute;n <b><i>convconm.m</i></b>.</p><pre class="language-matlab">
+<span class="keyword">function</span> convconm(x,h,a,b,vec)
+  figure (1) <span class="comment">% Se crea una figura para hacer las gr&aacute;ficas</span>
+  dtau = 0.005; <span class="comment">% Base de los rectangulos para realizar la integral </span>
+  tau = a:dtau:b; <span class="comment">% Intervalo de visualizaci&oacute;n del resultado</span>
+  ti = 0; <span class="comment">% Indice para el vector de resultados</span>
+  tvec = -5:.1:5.75; <span class="comment">% traslaciones de t, cuantas integrales se calulan  </span>
+  y = NaN*zeros(1, length (tvec)); <span class="comment">% Resultados de acuerdo a cuantos t</span>
+  <span class="keyword">for</span> t = tvec, <span class="comment">% Cantidad de traslaciones</span>
+      ti = ti+1; <span class="comment">% Indice para guardar el resultado (indice del tiempo)</span>
+      <span class="keyword">if</span>(vec == 0)
+          xh = x(t-tau).*h(tau); <span class="comment">% resultado de la multiplicaci&oacute;n</span>
+      <span class="keyword">else</span>
+          xh = x(t+tau).*h(tau);
+      <span class="keyword">end</span>
+      lxh = length(xh); <span class="comment">% longitud del resultado</span>
+      y(ti) = sum(xh.*dtau); <span class="comment">% Base por altura, aproximaci&oacute;n de la integral</span>
+      
+      subplot (2,1,1), <span class="comment">% gr&aacute;fica de 2 x 1 (primera)</span>
+      <span class="keyword">if</span>(vec == 0)
+          plot(tau, h(tau), <span class="string">'r-'</span>, tau, x(t-tau), <span class="string">'g--'</span>, t, -3, <span class="string">'ob'</span>); <span class="comment">%graficas</span>
+      <span class="keyword">else</span>
+          plot(tau, h(tau), <span class="string">'r-'</span>, tau, x(t+tau), <span class="string">'c--'</span>, -t, -3, <span class="string">'ob'</span>); <span class="comment">%graficas</span>
+      <span class="keyword">end</span>
+      axis ([tau(1) tau(end) -2.0 2.5]); <span class="comment">% l&iacute;mites de los ejes</span>
+      patch([tau(1:end-1); tau(1:end-1); tau(2:end); tau(2:end)],<span class="keyword">...</span>
+      [zeros(1,lxh-1);xh(1:end-1);xh(2:end);zeros(1,lxh-1)],<span class="keyword">...</span>
+      [.8 .8 .8], <span class="string">'edgecolor'</span>, <span class="string">'none'</span>);
+      xlabel(<span class="string">'\tau'</span>); <span class="comment">% Texto del eje X</span>
+      legend(<span class="string">'h(\tau)'</span>, <span class="string">'x(t-\tau)'</span>,<span class="string">'t'</span>,<span class="string">'h(\tau)x(t-\tau)'</span>)<span class="comment">% Caja de Texto  </span>
+      
+      subplot (2, 1, 2)  <span class="comment">% gr&aacute;fica de 2 x 1 (segunda)</span>
+      plot (tvec, y, <span class="string">'k'</span>, tvec (ti), y(ti), <span class="string">'ok'</span>);
+      xlabel (<span class="string">'t'</span>); 
+      ylabel (<span class="string">'y(t) = \int h(\tau)x(t-\tau) d\tau'</span>);
+      axis ([tau(1) tau(end) -1.0 5.0]); <span class="comment">% l&iacute;mites del eje</span>
+      grid; <span class="comment">% malla</span>
+      drawnow; <span class="comment">% efecto de movimiento continuo</span>
+  <span class="keyword">end</span>
+  <span class="keyword">end</span>
+
+</pre><pre class="codeinput">u = @(t) (t&gt;=0); <span class="comment">%Escal&oacute;n</span>
+p = @(t) (t&gt;=0) &amp; (t&lt;1); <span class="comment">%Pulso unitario</span>
+</pre><p>En este problema se tienen las siguientes dos se&ntilde;ales:</p><p><img src="Practica_04_eq18341212657467242754.png" alt="$$f(t) = (-t+1)p(t)+(t-1)p(t-1)$$"></p><p><img src="Practica_04_eq05444153925235227811.png" alt="$$g(t) = p(t)$$"></p><pre class="codeinput">t = -1:0.001:3;
+f = @(t) ((-t+1).*p(t)+(t-1).*p(t-1));
+g = @(t) (p(t));
+subplot(1, 2, 1)
+plot(t, f(t), <span class="string">'b'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'f(t)'</span>); title(<span class="string">'f(t) = (-t+1)p(t)+(t-1)p(t-1)'</span>);
+subplot(1, 2, 2)
+plot(t, g(t), <span class="string">'g'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'g(t)'</span>); title(<span class="string">'g(t) = p(t)'</span>);
+</pre><img vspace="5" hspace="5" src="Practica_04_01.png" alt=""> <div><ul><li><b>SOLUCI&Oacute;N ANAL&Iacute;TICA.</b></li></ul></div><p>Se har&aacute; uso de la definici&oacute;n de convoluci&oacute;n dada como <img src="Practica_04_eq05963461640856724985.png" alt="$$ f(t)*g(t) = \int_{- \infty}^{ \infty }h( \tau )x(t- \tau ) d\tau$">. Para este caso se establece:</p><p><img src="Practica_04_eq04829619570716364849.png" alt="$$f(\tau ) = \{ 0 < \tau < 1 : -\tau +1, 1 < \tau < 2 : (\tau -1) \} $$"> y</p><p><img src="Practica_04_eq11141202135436501429.png" alt="$$g(t-\tau ) = \{ t-1 < \tau < t : 1 \} $$">,</p><p>Existen tres casos:</p><div><ol><li>La se&ntilde;al <img src="Practica_04_eq17336229304683995157.png" alt="$g(t-\tau )$"> entra en la se&ntilde;al <img src="Practica_04_eq18348173851842869340.png" alt="$f(\tau )$"> cuando <img src="Practica_04_eq08836616216743871697.png" alt="$0<t<1:$"> <img src="Practica_04_eq10781944364638984901.png" alt="$$ \int_{0}^{t}-\tau + 1d\tau$">.</li><li>La se&ntilde;al <img src="Practica_04_eq17336229304683995157.png" alt="$g(t-\tau )$"> queda contenida dentro de <img src="Practica_04_eq18348173851842869340.png" alt="$f(\tau )$"> cuando <img src="Practica_04_eq13946833160009616693.png" alt="$1<t<2$"> <img src="Practica_04_eq10090547788610914767.png" alt="$$ \int_{1}^{t}\tau -1d\tau + \int_{t-1}^{1}-\tau +1d\tau$">.</li><li>El &uacute;ltimo caso es el de la salida de <img src="Practica_04_eq17336229304683995157.png" alt="$g(t-\tau )$"> de la otra se&ntilde;al donde <img src="Practica_04_eq09607569127389371162.png" alt="$2<t<3:$"> <img src="Practica_04_eq01793312640911962141.png" alt="$$ \int_{t-1}^{2}\tau -1d\tau$">.</li></ol></div><p>Ejecutando la operaci&oacute;n con c&oacute;digo:</p><pre class="codeinput">syms <span class="string">t</span> <span class="string">tau</span>
+conv1 = int(-tau+1,tau,0,t)
+conv2 = int(tau-1,tau,1,t) + int(-tau+1,tau,t-1,1)
+conv3 = int(tau-1,tau,t-1,2)
+</pre><pre class="codeoutput"> 
+conv1 =
+ 
+-(t*(t - 2))/2
+ 
+ 
+conv2 =
+ 
+(t - 1)^2/2 + (t - 2)^2/2
+ 
+ 
+conv3 =
+ 
+-((t - 1)*(t - 3))/2
+ 
+</pre><p>La descripci&oacute;n de la nueva se&ntilde;al generada por la correlaci&oacute;n de <img src="Practica_04_eq14225917717151468940.png" alt="$x_0(t)$"> y <img src="Practica_04_eq07201408028398127491.png" alt="$x_1(t)$"> queda escrita como:</p><p><img vspace="5" hspace="5" src="31.PNG" alt=""> </p><pre class="codeinput">t = -1:0.001:4;
+C_fg = (-t.^2/2+t).*p(t)+((t-1).^2/2+(t-2).^2/2).*p(t-1)+(-((t-1).*(t-3))/2).*p(t-2);
+subplot(1,1,1)
+plot(t, C_fg, <span class="string">'r'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); title(<span class="string">'C_{f(t)g(t)} = f(t)*g(t)'</span>);
+</pre><img vspace="5" hspace="5" src="Practica_04_02.png" alt=""> <p>Como comprobaci&oacute;n, se compara el resultado del proceso anal&iacute;tico con el de la funci&oacute;n <i><b>convconm.m</b></i> donde se puede apreciar que se ha llegado al mismo resultado:</p><pre class="codeinput">convconm(f,g,0,4,0)
+</pre><img vspace="5" hspace="5" src="Practica_04_03.png" alt=""> <h2 id="13">Ejercicio 3) - PR04.</h2><p>En este problema se tienen las siguientes dos se&ntilde;ales:</p><p><img src="Practica_04_eq17750366085919336694.png" alt="$$f(t) = (t)p(t)+p(t-1)$$"></p><p><img src="Practica_04_eq12066704839653133969.png" alt="$$g(t) = p((t-1)/2)$$"></p><pre class="codeinput">t = -1:0.001:4;
+f = @(t) ((t).*p(t)+p(t-1));
+g = @(t) (p((t-1)/2));
+subplot(1, 2, 1)
+plot(t, f(t), <span class="string">'b'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'f(t)'</span>); title(<span class="string">'f(t) = (-t+1)p(t)+(t-1)p(t-1)'</span>);
+subplot(1, 2, 2)
+plot(t, g(t), <span class="string">'g'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'g(t)'</span>); title(<span class="string">'g(t) = pulso(t)'</span>);
+</pre><img vspace="5" hspace="5" src="Practica_04_04.png" alt=""> <div><ul><li><b>SOLUCI&Oacute;N ANAL&Iacute;TICA.</b></li></ul></div><p>Se establecen las se&ntilde;ales con su respectiva modificaci&oacute;n:</p><p><img src="Practica_04_eq13987415531547266373.png" alt="$$f(\tau ) = \{ 0<\tau <1:\tau,1<\tau <2:1  \} $$"> y</p><p><img src="Practica_04_eq06154449446281103918.png" alt="$$g(t-\tau ) = \{ t-3 < \tau < t-1 : 1 \} $$">,</p><p>Existen cuatro casos:</p><div><ol><li>La se&ntilde;al <img src="Practica_04_eq17336229304683995157.png" alt="$g(t-\tau )$"> entra en la se&ntilde;al <img src="Practica_04_eq18348173851842869340.png" alt="$f(\tau )$"> cuando <img src="Practica_04_eq08089696745982880759.png" alt="$1<t<2:$"> <img src="Practica_04_eq01558444272726967972.png" alt="$$ \int_{0}^{t-1}\tau d\tau$">.</li><li>La se&ntilde;al <img src="Practica_04_eq17336229304683995157.png" alt="$g(t-\tau )$"> queda contenida dentro de <img src="Practica_04_eq18348173851842869340.png" alt="$f(\tau )$"> cuando <img src="Practica_04_eq09607569127389371162.png" alt="$2<t<3:$"> <img src="Practica_04_eq17955867478024459270.png" alt="$$ \int_{1}^{t-1}1 d\tau + \int_{0}^{1}\tau d\tau$">.</li><li>Cuando <img src="Practica_04_eq10576684062869888342.png" alt="$3<t<4:$"> <img src="Practica_04_eq02255537990507353319.png" alt="$$ \int_{1}^{2}1 d\tau + \int_{t-3}^{1}\tau d\tau$">.</li><li>El &uacute;ltimo caso es el de la salida de <img src="Practica_04_eq17336229304683995157.png" alt="$g(t-\tau )$"> de la otra se&ntilde;al donde <img src="Practica_04_eq12772224743778696931.png" alt="$4<t<5:$"> <img src="Practica_04_eq08559336698081948786.png" alt="$$ \int_{t-3}^{2}1 d\tau$">.</li></ol></div><p>Ejecutando la operaci&oacute;n con c&oacute;digo:</p><pre class="codeinput">syms <span class="string">t</span> <span class="string">tau</span>
+conv1 = int(tau,tau,0,t-1)
+conv2 = int(1,tau,1,t-1) + int(tau,tau,0,1)
+conv3 = int(1,tau,1,2) + int(tau,tau,t-3,1)
+conv4 = int(1,tau,t-3,2)
+</pre><pre class="codeoutput"> 
+conv1 =
+ 
+(t - 1)^2/2
+ 
+ 
+conv2 =
+ 
+t - 3/2
+ 
+ 
+conv3 =
+ 
+3/2 - (t - 3)^2/2
+ 
+ 
+conv4 =
+ 
+5 - t
+ 
+</pre><p>La descripci&oacute;n de la nueva se&ntilde;al generada por la correlaci&oacute;n de <img src="Practica_04_eq14225917717151468940.png" alt="$x_0(t)$"> y <img src="Practica_04_eq07201408028398127491.png" alt="$x_1(t)$"> queda escrita como:</p><p><img vspace="5" hspace="5" src="33.PNG" alt=""> </p><pre class="codeinput">t = 0:0.001:6;
+C_fg = ((t-1).^2/2).*p(t-1)+(t-3/2).*p(t-2)+(3/2-(t-3).^2/2).*p(t-3)+(5-t).*p(t-4);
+subplot(1,1,1)
+plot(t, C_fg, <span class="string">'r'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); title(<span class="string">'C_{f(t)g(t)} = f(t)*g(t)'</span>);
+</pre><img vspace="5" hspace="5" src="Practica_04_05.png" alt=""> <p>Como comprobaci&oacute;n, se compara el resultado del proceso anal&iacute;tico con el de la funci&oacute;n <i><b>convconm.m</b></i> donde se puede apreciar que se ha llegado al mismo resultado:</p><pre class="codeinput">convconm(f,g,0,6,0)
+</pre><img vspace="5" hspace="5" src="Practica_04_06.png" alt=""> <h2 id="21">Ejercicio e) - PR06.</h2><p>En este problema se quiere obtener la autocorrelaci&oacute;n de:</p><p><img src="Practica_04_eq13810395686728971791.png" alt="$$x_1(t) = u(t)-2u(t-3)+u(t-4)$$"></p><pre class="codeinput">t = -1:0.001:5;
+x1 = @(t) (u(t)-2.*u(t-3)+u(t-4));
+subplot(1, 1, 1)
+plot(t, x1(t), <span class="string">'b'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'f(t)'</span>); title(<span class="string">'f(t) = (-t+1)p(t)+(t-1)p(t-1)'</span>);
+</pre><img vspace="5" hspace="5" src="Practica_04_07.png" alt=""> <div><ul><li><b>SOLUCI&Oacute;N ANAL&Iacute;TICA.</b></li></ul></div><p>Se har&aacute; uso de la definici&oacute;n de correlaci&oacute;n dada como <img src="Practica_04_eq02416346660705749373.png" alt="$$ f(t)**g(t)=f(t)*g(-t)= \int_{- \infty}^{ \infty }h( \tau )x(t+ \tau ) d\tau$">. Se establece la se&ntilde;al como:</p><p><img src="Practica_04_eq03236451717073253429.png" alt="$$x_1(t+\tau ) = \{ -t<\tau <3-t:1,3-t<\tau <4-t:-1 \} $$"></p><p><img src="Practica_04_eq14905452915527744292.png" alt="$$x_1(\tau ) = \{ 0<\tau <3:1,3<\tau <4:-1 \} $$"></p><p>Se aplica la suma cartesiana para los intervalos de la convoluci&oacute;n:</p><p><img src="Practica_04_eq09918130530115345673.png" alt="$$[0, 3, 4] + [0, -3, -4] = [-4, -3, -1, 0, 1, 3, 4]$$"></p><p>En este ejercicio, se presentan seis casos:</p><div><ol><li>La se&ntilde;al <img src="Practica_04_eq06006446018426096222.png" alt="$x_1(t+\tau )$"> entra por primera vez a la se&ntilde;al <img src="Practica_04_eq09636885030519459806.png" alt="$x_1(\tau )$"> cuando <img src="Practica_04_eq10576684062869888342.png" alt="$3<t<4:$"> <img src="Practica_04_eq01738306888822854412.png" alt="$$ \int_{0}^{4-t}(-1)d\tau$">.</li><li>En los traslapes internos, cuando <img src="Practica_04_eq00976360473363254064.png" alt="$1<t<3:$"> <img src="Practica_04_eq13628526723686985006.png" alt="$$ \int_{3-t}^{4-t}(-1)d\tau + \int_{0}^{3-t}1d\tau$">.</li><li>Cuando <img src="Practica_04_eq08836616216743871697.png" alt="$0<t<1:$"> <img src="Practica_04_eq11901307355112198564.png" alt="$$\int_{3-t}^{3}(-1)d\tau + \int_{3}^{4-t}1d\tau + \int_{0}^{3-t}1d\tau$">.</li><li>Cuando <img src="Practica_04_eq05728048669787781724.png" alt="$-1<t<0:$"> <img src="Practica_04_eq01346703947011807562.png" alt="$$\int_{3-t}^{4}1d\tau + \int_{3}^{3-t}(-1)d\tau + \int_{-t}^{3}1d\tau$">.</li><li>Cuando <img src="Practica_04_eq11243842405680272113.png" alt="$-3<t<-1:$"> <img src="Practica_04_eq03519506724227366990.png" alt="$$\int_{3}^{4}(-1)d\tau + \int_{-t}^{3}1d\tau$">.</li><li>Cuando la se&ntilde;al <img src="Practica_04_eq06006446018426096222.png" alt="$x_1(t+\tau )$"> ya va de salida de <img src="Practica_04_eq09636885030519459806.png" alt="$x_1(\tau )$">, cuando <img src="Practica_04_eq04560169363542119994.png" alt="$-4<t<-3:$"> <img src="Practica_04_eq16670088141055541749.png" alt="$$ \int_{-t}^{4}(-1)d\tau$">.</li></ol></div><p>En c&oacute;digo, se resuelven las integrales de esta manera:</p><pre class="codeinput">syms <span class="string">t</span> <span class="string">tau</span>
+i1 = int(-1,tau,0,4-t)
+i2 = int(-1,tau,3-t,4-t)+ int(1,tau,0,3-t)
+i3 = int(-1,tau,3-t, 3) + int(1,tau,3,4-t) + int(1,tau,0,3-t)
+i4 = int(1,tau,3-t,4) + int(-1,tau,3,3-t) + int(1,tau,-t,3)
+i5 = int(-1,tau,3,4) + int(1,tau,-t,3)
+i6 = int(-1,tau,-t,4)
+<span class="comment">%</span>
+</pre><pre class="codeoutput"> 
+i1 =
+ 
+t - 4
+ 
+ 
+i2 =
+ 
+2 - t
+ 
+ 
+i3 =
+ 
+4 - 3*t
+ 
+ 
+i4 =
+ 
+3*t + 4
+ 
+ 
+i5 =
+ 
+t + 2
+ 
+ 
+i6 =
+ 
+- t - 4
+ 
+</pre><p>La descripci&oacute;n de la nueva se&ntilde;al generada por la autocorrelaci&oacute;n de <img src="Practica_04_eq07201408028398127491.png" alt="$x_1(t)$"> queda escrita como:</p><p><img vspace="5" hspace="5" src="e6.PNG" alt=""> </p><pre class="codeinput">t = -5:0.001:5;
+Rx1x1 = (t-4).*p(t-3)+(2-t).*p((t-1)/2)+(4-3*t).*p(t)+(3*t+4).*p(t+1)+(t+2).*p((t+3)/2)+(-t-4).*p(t+4);
+subplot(1,1,1)
+plot(t, Rx1x1, <span class="string">'m'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); title(<span class="string">'R_{x_1(t)x_1(t)} = x_1(t)**x_1(t)'</span>);
+</pre><img vspace="5" hspace="5" src="Practica_04_08.png" alt=""> <p>Como comprobaci&oacute;n, se compara el resultado del proceso anal&iacute;tico con el de la funci&oacute;n <i><b>convconm.m</b></i> donde se puede apreciar que se ha llegado al mismo resultado:</p><pre class="codeinput">convconm(x1,x1,-5,5,1);
+<span class="comment">%</span>
+</pre><img vspace="5" hspace="5" src="Practica_04_09.png" alt=""> <h2 id="29">Ejercicio f) - PR06.</h2><p>En este problema se busca la correlaci&oacute;n de las siguientes se&ntilde;ales:</p><p><img src="Practica_04_eq02642848220458112847.png" alt="$$x_0(t) = u(t)-2u(t-3)+u(t-4)$$"></p><p><img src="Practica_04_eq10020817297759216541.png" alt="$$x_1(t) = u(t)-2u(t-2)+u(t-4)$$"></p><pre class="codeinput">t = -1:0.001:5;
+x0 = @(t) (u(t)-2.*u(t-2)+u(t-4));
+x1 = @(t) (u(t)-2.*u(t-3)+u(t-4));
+subplot(1, 2, 1)
+plot(t, x0(t), <span class="string">'b'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'f(t)'</span>); title(<span class="string">'x_0(t) = u(t)-2u(t-2)+u(t-4)'</span>);
+subplot(1, 2, 2)
+plot(t, x1(t), <span class="string">'g'</span>, <span class="string">'LineWidth'</span>, 2); grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); ylabel(<span class="string">'f(t)'</span>); title(<span class="string">'x_1(t) = u(t)-2u(t-3)+u(t-4)'</span>);
+</pre><img vspace="5" hspace="5" src="Practica_04_10.png" alt=""> <div><ul><li><b>SOLUCI&Oacute;N ANAL&Iacute;TICA.</b></li></ul></div><p>Del mismo modo que el ejemplo anterior con la definici&oacute;n de correlaci&oacute;n, se establecen las se&ntilde;ales como:</p><p><img src="Practica_04_eq15678654633893240776.png" alt="$$x_0(t+\tau ) = \{ -t<\tau <2-t:1,2-t<\tau <4-t:-1 \} $$"></p><p><img src="Practica_04_eq14905452915527744292.png" alt="$$x_1(\tau ) = \{ 0<\tau <3:1,3<\tau <4:-1 \} $$"></p><p>Se aplica la suma cartesiana para los intervalos de la convoluci&oacute;n:</p><p><img src="Practica_04_eq08799412254997387553.png" alt="$$[0, 2, 4] + [0, -3, -4] = [-4, -3, -2, -1, 0, 1, 2, 4]$$"></p><p>Como en el problema anterior, se presentan casos muy similares:</p><div><ol><li>Cuando la primer se&ntilde;al entra a la segunda, cuando <img src="Practica_04_eq02058824138881544387.png" alt="$2<t<4:$"> <img src="Practica_04_eq01738306888822854412.png" alt="$$ \int_{0}^{4-t}(-1)d\tau$">.</li><li>En los traslapes internos, cuando <img src="Practica_04_eq08089696745982880759.png" alt="$1<t<2:$"> <img src="Practica_04_eq04509241687345656194.png" alt="$$ \int_{0}^{2-t}1d\tau + \int_{2-t}^{4-t}(-1)d\tau$">.</li><li>Cuando <img src="Practica_04_eq08836616216743871697.png" alt="$0<t<1:$"> <img src="Practica_04_eq15774066055414602034.png" alt="$$\int_{0}^{2-t}1d\tau + \int_{2-t}^{3}(-1)d\tau + \int_{3}^{4-t}1d\tau$">.</li><li>Cuando <img src="Practica_04_eq05728048669787781724.png" alt="$-1<t<0:$"> <img src="Practica_04_eq18012900761547548827.png" alt="$$\int_{3}^{4}1d\tau + \int_{-t}^{2-t}1d\tau + \int_{2-t}^{3}(-1)d\tau$">.</li><li>Cuando <img src="Practica_04_eq11713813644699254218.png" alt="$-2<t<-1:$"> <img src="Practica_04_eq10475339717893939808.png" alt="$$\int_{-t}^{3}1d\tau + \int_{3}^{2-t}(-1)d\tau + \int_{2-t}^{4}1d\tau$">.</li><li>Cuando <img src="Practica_04_eq10879523508621453321.png" alt="$-3<t<-2:$"> <img src="Practica_04_eq14594169925289407657.png" alt="$$\int_{-t}^{3}1d\tau + \int_{3}^{4}(-1)d\tau$">.</li><li>Cuando la se&ntilde;al <img src="Practica_04_eq11026495841791393331.png" alt="$x_0(t+\tau )$"> ya va de salida de <img src="Practica_04_eq09636885030519459806.png" alt="$x_1(\tau )$">, cuando <img src="Practica_04_eq04560169363542119994.png" alt="$-4<t<-3:$"> <img src="Practica_04_eq16670088141055541749.png" alt="$$ \int_{-t}^{4}(-1)d\tau$">.</li></ol></div><p>En c&oacute;digo, se resuelven las integrales de esta manera:</p><pre class="codeinput">syms <span class="string">t</span> <span class="string">tau</span>
+i1 = int(-1,tau,0,4-t)
+i2 = int(1,tau,0,2-t)+ int(-1,tau,2-t,4-t)
+i3 = int(1,tau,0,2-t) + int(-1,tau,2-t,3) + int(1,tau,3,4-t)
+i4 = int(1,tau,-t,2-t) + int(-1,tau,2-t,3) + int(1,tau,3,4)
+i5 = int(1,tau,-t,3) + int(-1,tau,3,2-t)+ int(1,tau,2-t,4)
+i6 = int(-1,tau,3,4)+ int(1,tau,-t,3)
+i7 = int(-1,tau,-t,4)
+<span class="comment">%</span>
+</pre><pre class="codeoutput"> 
+i1 =
+ 
+t - 4
+ 
+ 
+i2 =
+ 
+-t
+ 
+ 
+i3 =
+ 
+2 - 3*t
+ 
+ 
+i4 =
+ 
+2 - t
+ 
+ 
+i5 =
+ 
+3*t + 6
+ 
+ 
+i6 =
+ 
+t + 2
+ 
+ 
+i7 =
+ 
+- t - 4
+ 
+</pre><p>La descripci&oacute;n de la nueva se&ntilde;al generada por la correlaci&oacute;n de <img src="Practica_04_eq14225917717151468940.png" alt="$x_0(t)$"> y <img src="Practica_04_eq07201408028398127491.png" alt="$x_1(t)$"> queda escrita como:</p><p><img vspace="5" hspace="5" src="f6.PNG" alt=""> </p><pre class="codeinput">t = -5:0.001:5;
+Rx0x1 = (-t-4).*p(t+4)+(t+2).*p(t+3)+(3*t+6).*p(t+2)+(2-t).*p(t+1)+(2-3*t).*p(t)+(-t).*p(t-1)+(t-4).*p((t-2)/2);
+subplot(1,1,1)
+plot(t,Rx0x1, <span class="string">'m'</span>, <span class="string">'LineWidth'</span>, 2);grid <span class="string">on</span>;
+xlabel(<span class="string">'t'</span>); title(<span class="string">'R_{x_0(t)x_1(t)} = x_0(t)**x_1(t)'</span>);
+</pre><img vspace="5" hspace="5" src="Practica_04_11.png" alt=""> <p>Como comprobaci&oacute;n, se compara el resultado del proceso anal&iacute;tico con el de la funci&oacute;n <i><b>convconm.m</b></i> donde se puede apreciar que se ha llegado al mismo resultado:</p><pre class="codeinput">convconm(x0,x1,-4.5,5,1);
+<span class="comment">%</span>
+</pre><img vspace="5" hspace="5" src="Practica_04_12.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Práctica 4: Convolución y Correlación de señales en tiempo continuo
+% *Autor: Córdova Fernández Karla Lilia*
+%
+% *SEÑALES Y SISTEMAS, Grupo 2TV1*
+
+%% Objetivos de la práctica.
+% * Conocer métodos básicos de integración numérica 
+% * Manipulación de instrucciones en MATLAB
+% * Simular convoluciones y correlaciones de señales continuas
+%
+%% Introducción.
+% 
+% 
+% # *Teorema fundamental del cálculo.*
+% 
+%
+%
+%% Problema 1-PR04.
+% Para fines prácticos, en la práctica se utilizarán dos funciones anónimas para definir 
+% a la función _escalón u(t)_ y el _pulso unitario p(t)_. Para la
+% convolución de señales se implementará la función *_convconm.m_*.
+%
+% <include>convconm.m</include>
+%
+%%
+u = @(t) (t>=0); %Escalón
+p = @(t) (t>=0) & (t<1); %Pulso unitario
+%%
+% En este problema se tienen las siguientes dos señales:
+% 
+% 
+% $$f(t) = (-t+1)p(t)+(t-1)p(t-1)$$
+% 
+% $$g(t) = p(t)$$
+%
+%
+%%
+t = -1:0.001:3;
+f = @(t) ((-t+1).*p(t)+(t-1).*p(t-1));
+g = @(t) (p(t));
+subplot(1, 2, 1)
+plot(t, f(t), 'b', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('f(t) = (-t+1)p(t)+(t-1)p(t-1)');
+subplot(1, 2, 2)
+plot(t, g(t), 'g', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('g(t)'); title('g(t) = p(t)');
+%%
+% * *SOLUCIÓN ANALÍTICA.*
+%
+% Se hará uso de la definición de convolución dada como
+% $$ f(t)*g(t) = \int_{- \infty}^{ \infty }h( \tau )x(t- \tau )
+% d\tau$. Para este caso se establece:
+%
+% $$f(\tau ) = \{ 0 < \tau < 1 : -\tau +1, 1 < \tau < 2 : (\tau -1) \} $$ y 
+%
+% $$g(t-\tau ) = \{ t-1 < \tau < t : 1 \} $$,
+% 
+% Existen tres casos:
+%
+% # La señal $g(t-\tau )$ entra en la señal $f(\tau )$ cuando $0<t<1:$ $$
+% \int_{0}^{t}-\tau + 1d\tau$.
+% # La señal $g(t-\tau )$ queda contenida dentro de $f(\tau )$ cuando $1<t<2$
+% $$ \int_{1}^{t}\tau -1d\tau + \int_{t-1}^{1}-\tau +1d\tau$.
+% # El último caso es el de la salida de $g(t-\tau )$ de la otra señal donde $2<t<3:$
+% $$ \int_{t-1}^{2}\tau -1d\tau$.
+% 
+% Ejecutando la operación con código:
+%%
+syms t tau
+conv1 = int(-tau+1,tau,0,t)
+conv2 = int(tau-1,tau,1,t) + int(-tau+1,tau,t-1,1)
+conv3 = int(tau-1,tau,t-1,2)
+%%
+% La descripción de la nueva señal generada por la correlación de $x_0(t)$ y $x_1(t)$ queda escrita como:
+%
+% <<31.PNG>>
+%
+%%
+t = -1:0.001:4;
+C_fg = (-t.^2/2+t).*p(t)+((t-1).^2/2+(t-2).^2/2).*p(t-1)+(-((t-1).*(t-3))/2).*p(t-2);
+subplot(1,1,1)
+plot(t, C_fg, 'r', 'LineWidth', 2); grid on;
+xlabel('t'); title('C_{f(t)g(t)} = f(t)*g(t)');
+%%
+% Como comprobación, se compara el resultado del proceso analítico con el
+% de la función _*convconm.m*_ donde se puede apreciar que se ha llegado al mismo resultado:
+
+%%
+convconm(f,g,0,4,0)
+%% Ejercicio 3) - PR04.
+%
+% En este problema se tienen las siguientes dos señales:
+% 
+% 
+% $$f(t) = (t)p(t)+p(t-1)$$
+% 
+% $$g(t) = p((t-1)/2)$$
+%
+%
+%%
+t = -1:0.001:4;
+f = @(t) ((t).*p(t)+p(t-1));
+g = @(t) (p((t-1)/2));
+subplot(1, 2, 1)
+plot(t, f(t), 'b', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('f(t) = (-t+1)p(t)+(t-1)p(t-1)');
+subplot(1, 2, 2)
+plot(t, g(t), 'g', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('g(t)'); title('g(t) = pulso(t)');
+%%
+% * *SOLUCIÓN ANALÍTICA.*
+%
+% Se establecen las señales con su respectiva modificación:
+%
+% $$f(\tau ) = \{ 0<\tau <1:\tau,1<\tau <2:1  \} $$ y 
+%
+% $$g(t-\tau ) = \{ t-3 < \tau < t-1 : 1 \} $$,
+% 
+% Existen cuatro casos:
+%
+% # La señal $g(t-\tau )$ entra en la señal $f(\tau )$ cuando $1<t<2:$ $$
+% \int_{0}^{t-1}\tau d\tau$.
+% # La señal $g(t-\tau )$ queda contenida dentro de $f(\tau )$ cuando $2<t<3:$
+% $$ \int_{1}^{t-1}1 d\tau + \int_{0}^{1}\tau d\tau$.
+% # Cuando $3<t<4:$ $$ \int_{1}^{2}1 d\tau + \int_{t-3}^{1}\tau d\tau$.
+% # El último caso es el de la salida de $g(t-\tau )$ de la otra señal donde $4<t<5:$
+% $$ \int_{t-3}^{2}1 d\tau$.
+% 
+% Ejecutando la operación con código:
+%%
+syms t tau
+conv1 = int(tau,tau,0,t-1)
+conv2 = int(1,tau,1,t-1) + int(tau,tau,0,1)
+conv3 = int(1,tau,1,2) + int(tau,tau,t-3,1)
+conv4 = int(1,tau,t-3,2)
+%%
+% La descripción de la nueva señal generada por la correlación de $x_0(t)$ y $x_1(t)$ queda escrita como:
+%
+% <<33.PNG>>
+%
+%%
+t = 0:0.001:6;
+C_fg = ((t-1).^2/2).*p(t-1)+(t-3/2).*p(t-2)+(3/2-(t-3).^2/2).*p(t-3)+(5-t).*p(t-4);
+subplot(1,1,1)
+plot(t, C_fg, 'r', 'LineWidth', 2); grid on;
+xlabel('t'); title('C_{f(t)g(t)} = f(t)*g(t)');
+%%
+% Como comprobación, se compara el resultado del proceso analítico con el
+% de la función _*convconm.m*_ donde se puede apreciar que se ha llegado al mismo resultado:
+%%
+convconm(f,g,0,6,0)
+%% Ejercicio e) - PR06.
+%
+% En este problema se quiere obtener la autocorrelación de:
+% 
+% 
+% $$x_1(t) = u(t)-2u(t-3)+u(t-4)$$
+%
+%
+%%
+t = -1:0.001:5;
+x1 = @(t) (u(t)-2.*u(t-3)+u(t-4));
+subplot(1, 1, 1)
+plot(t, x1(t), 'b', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('f(t) = (-t+1)p(t)+(t-1)p(t-1)');
+%%
+% * *SOLUCIÓN ANALÍTICA.*
+%
+% Se hará uso de la definición de correlación dada como
+% $$ f(t)**g(t)=f(t)*g(-t)= \int_{- \infty}^{ \infty }h( \tau )x(t+ \tau )
+% d\tau$.
+% Se establece la señal como:
+%
+% $$x_1(t+\tau ) = \{ -t<\tau <3-t:1,3-t<\tau <4-t:-1 \} $$
+%
+% $$x_1(\tau ) = \{ 0<\tau <3:1,3<\tau <4:-1 \} $$
+%
+% Se aplica la suma cartesiana para los intervalos de la convolución:
+%
+% $$[0, 3, 4] + [0, -3, -4] = [-4, -3, -1, 0, 1, 3, 4]$$
+%
+% En este ejercicio, se presentan seis casos:
+% 
+% # La señal $x_1(t+\tau )$ entra por primera vez a la señal $x_1(\tau )$ cuando $3<t<4:$ $$
+% \int_{0}^{4-t}(-1)d\tau$.
+% # En los traslapes internos, cuando $1<t<3:$ $$ \int_{3-t}^{4-t}(-1)d\tau +
+% \int_{0}^{3-t}1d\tau$.
+% # Cuando $0<t<1:$ $$\int_{3-t}^{3}(-1)d\tau + \int_{3}^{4-t}1d\tau
+% + \int_{0}^{3-t}1d\tau$.
+% # Cuando $-1<t<0:$ $$\int_{3-t}^{4}1d\tau + \int_{3}^{3-t}(-1)d\tau
+% + \int_{-t}^{3}1d\tau$.
+% # Cuando $-3<t<-1:$ $$\int_{3}^{4}(-1)d\tau + \int_{-t}^{3}1d\tau$.
+% # Cuando la señal $x_1(t+\tau )$ ya va de salida de $x_1(\tau )$, cuando $-4<t<-3:$ $$
+% \int_{-t}^{4}(-1)d\tau$.
+%
+% En código, se resuelven las integrales de esta manera:
+%%
+syms t tau
+i1 = int(-1,tau,0,4-t)
+i2 = int(-1,tau,3-t,4-t)+ int(1,tau,0,3-t)
+i3 = int(-1,tau,3-t, 3) + int(1,tau,3,4-t) + int(1,tau,0,3-t)
+i4 = int(1,tau,3-t,4) + int(-1,tau,3,3-t) + int(1,tau,-t,3)
+i5 = int(-1,tau,3,4) + int(1,tau,-t,3)
+i6 = int(-1,tau,-t,4)
+%
+%%
+% La descripción de la nueva señal generada por la autocorrelación de $x_1(t)$ queda escrita como:
+%
+% <<e6.PNG>>
+%
+%%
+t = -5:0.001:5;
+Rx1x1 = (t-4).*p(t-3)+(2-t).*p((t-1)/2)+(4-3*t).*p(t)+(3*t+4).*p(t+1)+(t+2).*p((t+3)/2)+(-t-4).*p(t+4);
+subplot(1,1,1)
+plot(t, Rx1x1, 'm', 'LineWidth', 2); grid on;
+xlabel('t'); title('R_{x_1(t)x_1(t)} = x_1(t)**x_1(t)');
+%%
+% Como comprobación, se compara el resultado del proceso analítico con el
+% de la función _*convconm.m*_ donde se puede apreciar que se ha llegado al mismo resultado:
+
+%%
+convconm(x1,x1,-5,5,1);
+%
+%% Ejercicio f) - PR06.
+%
+% En este problema se busca la correlación de las siguientes señales:
+% 
+% 
+% $$x_0(t) = u(t)-2u(t-3)+u(t-4)$$
+%
+% $$x_1(t) = u(t)-2u(t-2)+u(t-4)$$
+%
+%%
+t = -1:0.001:5;
+x0 = @(t) (u(t)-2.*u(t-2)+u(t-4));
+x1 = @(t) (u(t)-2.*u(t-3)+u(t-4));
+subplot(1, 2, 1)
+plot(t, x0(t), 'b', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('x_0(t) = u(t)-2u(t-2)+u(t-4)');
+subplot(1, 2, 2)
+plot(t, x1(t), 'g', 'LineWidth', 2); grid on;
+xlabel('t'); ylabel('f(t)'); title('x_1(t) = u(t)-2u(t-3)+u(t-4)');
+%%
+% * *SOLUCIÓN ANALÍTICA.*
+%
+% Del mismo modo que el ejemplo anterior con la definición de correlación, se establecen las señales como:
+%
+% $$x_0(t+\tau ) = \{ -t<\tau <2-t:1,2-t<\tau <4-t:-1 \} $$
+%
+% $$x_1(\tau ) = \{ 0<\tau <3:1,3<\tau <4:-1 \} $$
+% 
+% Se aplica la suma cartesiana para los intervalos de la convolución:
+%
+% $$[0, 2, 4] + [0, -3, -4] = [-4, -3, -2, -1, 0, 1, 2, 4]$$
+%
+% Como en el problema anterior, se presentan casos muy similares:
+% 
+% # Cuando la primer señal entra a la segunda, cuando $2<t<4:$ $$
+% \int_{0}^{4-t}(-1)d\tau$.
+% # En los traslapes internos, cuando $1<t<2:$ $$ \int_{0}^{2-t}1d\tau +
+% \int_{2-t}^{4-t}(-1)d\tau$.
+% # Cuando $0<t<1:$ $$\int_{0}^{2-t}1d\tau + \int_{2-t}^{3}(-1)d\tau
+% + \int_{3}^{4-t}1d\tau$.
+% # Cuando $-1<t<0:$ $$\int_{3}^{4}1d\tau + \int_{-t}^{2-t}1d\tau
+% + \int_{2-t}^{3}(-1)d\tau$.
+% # Cuando $-2<t<-1:$ $$\int_{-t}^{3}1d\tau + \int_{3}^{2-t}(-1)d\tau
+% + \int_{2-t}^{4}1d\tau$.
+% # Cuando $-3<t<-2:$ $$\int_{-t}^{3}1d\tau + \int_{3}^{4}(-1)d\tau$.
+% # Cuando la señal $x_0(t+\tau )$ ya va de salida de $x_1(\tau )$, cuando $-4<t<-3:$ $$
+% \int_{-t}^{4}(-1)d\tau$.
+%
+% En código, se resuelven las integrales de esta manera:
+%%
+syms t tau
+i1 = int(-1,tau,0,4-t)
+i2 = int(1,tau,0,2-t)+ int(-1,tau,2-t,4-t)
+i3 = int(1,tau,0,2-t) + int(-1,tau,2-t,3) + int(1,tau,3,4-t)
+i4 = int(1,tau,-t,2-t) + int(-1,tau,2-t,3) + int(1,tau,3,4)
+i5 = int(1,tau,-t,3) + int(-1,tau,3,2-t)+ int(1,tau,2-t,4)
+i6 = int(-1,tau,3,4)+ int(1,tau,-t,3)
+i7 = int(-1,tau,-t,4)
+%
+%%
+% La descripción de la nueva señal generada por la correlación de $x_0(t)$ y $x_1(t)$ queda escrita como:
+%
+% <<f6.PNG>>
+%
+%%
+t = -5:0.001:5;
+Rx0x1 = (-t-4).*p(t+4)+(t+2).*p(t+3)+(3*t+6).*p(t+2)+(2-t).*p(t+1)+(2-3*t).*p(t)+(-t).*p(t-1)+(t-4).*p((t-2)/2);
+subplot(1,1,1)
+plot(t,Rx0x1, 'm', 'LineWidth', 2);grid on;
+xlabel('t'); title('R_{x_0(t)x_1(t)} = x_0(t)**x_1(t)');
+%%
+% Como comprobación, se compara el resultado del proceso analítico con el
+% de la función _*convconm.m*_ donde se puede apreciar que se ha llegado al mismo resultado:
+%%
+convconm(x0,x1,-4.5,5,1);
+%
+##### SOURCE END #####
+--></body></html>
